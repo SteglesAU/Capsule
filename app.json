@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "Capsule",
+    "slug": "capsule",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#000000"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.capsule",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Capsule needs camera access to capture images.",
+        "NSMicrophoneUsageDescription": "Capsule needs microphone access to record audio notes.",
+        "NSPhotoLibraryUsageDescription": "Capsule needs photo library access to attach images.",
+        "NSFaceIDUsageDescription": "Capsule uses Face ID to protect your review mode."
+      }
+    },
+    "android": {
+      "package": "app.capsule",
+      "permissions": ["CAMERA", "RECORD_AUDIO", "USE_BIOMETRIC"]
+    },
+    "scheme": "capsule",
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-sqlite"
+    ]
+  }
+}
