@@ -25,9 +25,9 @@ export async function scheduleUnlockNotification(): Promise<void> {
       body: 'Your box is open. Review your captured ideas.',
     },
     trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.DAILY,
       hour: unlockHour,
       minute: unlockMinute,
-    },
+      repeats: true,
+    } as Notifications.DailyTriggerInput,
   });
 }

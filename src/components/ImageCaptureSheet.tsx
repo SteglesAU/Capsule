@@ -15,7 +15,7 @@ export function ImageCaptureSheet({ visible, onClose, onCaptured }: Props) {
   const captureImage = async (useCamera: boolean) => {
     const fn = useCamera ? ImagePicker.launchCameraAsync : ImagePicker.launchImageLibraryAsync;
     const result = await fn({
-      mediaTypes: ['images'],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.8,
       allowsEditing: false,
     });
