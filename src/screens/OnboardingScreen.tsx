@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, SafeAreaView, TouchableOpacity } from 'react-native';
 import { Box, Lock, Clock, ChevronRight, Check } from 'lucide-react-native';
 import { useLockStore } from '../stores/lockStore';
 import { persistLockState, persistSettings } from '../lib/persistence';
 import { requestNotificationPermissions, scheduleUnlockNotification } from '../lib/notifications';
+import { TimeRoller } from '../components/TimeRoller';
 
-const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const DURATIONS = [
   { label: '30 min', value: 30 },
   { label: '1 hour', value: 60 },
@@ -17,10 +17,11 @@ export function OnboardingScreen() {
   const [step, setStep] = useState(0);
   const { setUnlockTime, setWindowDuration, setOnboardingComplete } = useLockStore();
   const [selectedHour, setSelectedHour] = useState(20);
+  const [selectedMinute, setSelectedMinute] = useState(0);
   const [selectedDuration, setSelectedDuration] = useState(120);
 
   const handleComplete = async () => {
-    setUnlockTime(selectedHour, 0);
+    setUnlockTime(selectedHour, selectedMinute);
     setWindowDuration(selectedDuration);
     setOnboardingComplete(true);
     await persistLockState();
@@ -28,12 +29,6 @@ export function OnboardingScreen() {
 
     const granted = await requestNotificationPermissions();
     if (granted) await scheduleUnlockNotification();
-  };
-
-  const formatHour = (h: number) => {
-    const period = h >= 12 ? 'PM' : 'AM';
-    const display = h % 12 || 12;
-    return `${display}:00 ${period}`;
   };
 
   const steps = [
@@ -59,22 +54,11 @@ export function OnboardingScreen() {
         <Text className="text-gray-500 text-center text-sm">Pick a time when you want to review your captured ideas.</Text>
       </View>
 
-      <ScrollView className="max-h-72" showsVerticalScrollIndicator={false}>
-        {HOURS.map(h => (
-          <TouchableOpacity
-            key={h}
-            onPress={() => setSelectedHour(h)}
-            className={`flex-row items-center justify-between py-3 px-4 rounded-xl mb-1 ${
-              selectedHour === h ? 'bg-blue-600/20 border border-blue-600/50' : 'bg-gray-800/50'
-            }`}
-          >
-            <Text className={`text-base ${selectedHour === h ? 'text-blue-400 font-semibold' : 'text-gray-300'}`}>
-              {formatHour(h)}
-            </Text>
-            {selectedHour === h && <Check size={18} color="#60A5FA" />}
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <TimeRoller
+        hour24={selectedHour}
+        minute={selectedMinute}
+        onChange={(h, m) => { setSelectedHour(h); setSelectedMinute(m); }}
+      />
     </View>,
 
     // Step 2: Set window duration

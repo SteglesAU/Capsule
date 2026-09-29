@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Web only: ensure the dark theme fills the page body (RN's bg-black on the root
+   view doesn't paint the html/body/#root behind it on web). */
+html, body, #root { background-color: #000; }

@@ -1,9 +1,10 @@
-import { View, Text, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, Platform } from 'react-native';
 import { Camera, Image as ImageIcon, X } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import { insertItem } from '../db/database';
 import { triggerHaptic } from '../lib/haptics';
+import { encryptFileInPlace } from '../lib/crypto';
 
 interface Props {
   visible: boolean;
@@ -24,18 +25,20 @@ export function ImageCaptureSheet({ visible, onClose, onCaptured }: Props) {
 
     const asset = result.assets[0];
 
-    // Copy to app directory
     const filename = `img_${Date.now()}.jpg`;
-    const destPath = `${FileSystem.documentDirectory}capsule/${filename}`;
-    await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}capsule/`, { intermediates: true });
-    await FileSystem.copyAsync({ from: asset.uri, to: destPath });
+    const meta = { width: asset.width, height: asset.height, mimeType: asset.mimeType || 'image/jpeg', filename };
 
-    await insertItem('image', destPath, {
-      width: asset.width,
-      height: asset.height,
-      mimeType: asset.mimeType || 'image/jpeg',
-      filename,
-    });
+    if (Platform.OS === 'web') {
+      // Web demo: no native file system — store the picker's blob/data URI directly.
+      await insertItem('image', asset.uri, { ...meta, encrypted: false });
+    } else {
+      // Native: copy into the app sandbox and encrypt at rest.
+      const destPath = `${FileSystem.documentDirectory}capsule/${filename}`;
+      await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}capsule/`, { intermediates: true });
+      await FileSystem.copyAsync({ from: asset.uri, to: destPath });
+      const encPath = await encryptFileInPlace(destPath);
+      await insertItem('image', encPath, { ...meta, encrypted: true });
+    }
 
     triggerHaptic('success');
     onCaptured();

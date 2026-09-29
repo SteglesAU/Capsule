@@ -1,0 +1,40 @@
+{
+  "cli": {
+    "version": ">= 24.0.0",
+    "appVersionSource": "local"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": { "image": "default" }
+    },
+    "preview": {
+      "distribution": "internal",
+      "autoIncrement": false,
+      "ios": {
+        "simulator": false,
+        "image": "default"
+      },
+      "credentialsSource": "local"
+    },
+    "production": {
+      "autoIncrement": true,
+      "ios": {
+        "image": "default"
+      },
+      "credentialsSource": "local"
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascApiKeyPath": "./.eas-creds/AuthKey_768FX6K6T7.p8",
+        "ascApiKeyId": "768FX6K6T7",
+        "ascApiKeyIssuerId": "56a5aece-9559-4025-aa93-83b3cd30d065",
+        "appleTeamId": "HW33ND6228",
+        "ascAppId": "6817167926"
+      }
+    }
+  }
+}

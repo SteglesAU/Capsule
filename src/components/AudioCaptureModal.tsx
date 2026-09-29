@@ -1,10 +1,11 @@
 import { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, Platform } from 'react-native';
 import { Mic, Square, X, Check } from 'lucide-react-native';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import { insertItem } from '../db/database';
 import { triggerHaptic } from '../lib/haptics';
+import { encryptFileInPlace } from '../lib/crypto';
 
 interface Props {
   visible: boolean;
@@ -41,20 +42,29 @@ export function AudioCaptureModal({ visible, onClose, onCaptured }: Props) {
     setRecording(null);
 
     if (uri) {
-      const filename = `audio_${Date.now()}.m4a`;
-      const destPath = `${FileSystem.documentDirectory}capsule/${filename}`;
-      await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}capsule/`, { intermediates: true });
-      await FileSystem.moveAsync({ from: uri, to: destPath });
-      setRecorded(destPath);
+      if (Platform.OS === 'web') {
+        // Web demo: no native file system — keep the recorder's blob URI directly.
+        setRecorded(uri);
+      } else {
+        const filename = `audio_${Date.now()}.m4a`;
+        const destPath = `${FileSystem.documentDirectory}capsule/${filename}`;
+        await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}capsule/`, { intermediates: true });
+        await FileSystem.moveAsync({ from: uri, to: destPath });
+        setRecorded(destPath);
+      }
     }
   };
 
   const saveRecording = async () => {
     if (!recorded) return;
-    await insertItem('audio', recorded, {
-      durationSeconds: duration,
-      mimeType: 'audio/m4a',
-    });
+    if (Platform.OS === 'web') {
+      // Web demo: store the blob URI directly (no native encryption/file system).
+      await insertItem('audio', recorded, { durationSeconds: duration, mimeType: 'audio/webm', encrypted: false });
+    } else {
+      // Native: encrypt the recording at rest; store the .enc path.
+      const encPath = await encryptFileInPlace(recorded);
+      await insertItem('audio', encPath, { durationSeconds: duration, mimeType: 'audio/m4a', encrypted: true });
+    }
     triggerHaptic('success');
     setRecorded(null);
     setDuration(0);

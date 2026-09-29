@@ -2,32 +2,69 @@
   "expo": {
     "name": "Capsule",
     "slug": "capsule",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "app.capsule",
+      "bundleIdentifier": "tech.bordernetworks.capsule",
       "infoPlist": {
         "NSCameraUsageDescription": "Capsule needs camera access to capture images.",
         "NSMicrophoneUsageDescription": "Capsule needs microphone access to record audio notes.",
         "NSPhotoLibraryUsageDescription": "Capsule needs photo library access to attach images.",
-        "NSFaceIDUsageDescription": "Capsule uses Face ID to protect your review mode."
-      }
+        "NSFaceIDUsageDescription": "Capsule uses Face ID to protect your review mode.",
+        "NSCalendarsUsageDescription": "Capsule can block out your daily review window in your calendar.",
+        "NSCalendarsWriteOnlyAccessUsageDescription": "Capsule adds your daily review window to your calendar."
+      },
+      "buildNumber": "7"
     },
     "android": {
       "package": "app.capsule",
-      "permissions": ["CAMERA", "RECORD_AUDIO", "USE_BIOMETRIC"]
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "USE_BIOMETRIC",
+        "READ_CALENDAR",
+        "WRITE_CALENDAR",
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR"
+      ]
     },
     "scheme": "capsule",
+    "experiments": {
+      "baseUrl": "/demo"
+    },
     "plugins": [
       "expo-router",
       "expo-secure-store",
-      "expo-sqlite"
-    ]
+      "expo-sqlite",
+      "expo-notifications",
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "Capsule blocks out your daily review window in your calendar."
+        }
+      ],
+      "expo-asset"
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "8eeca5f0-ef1e-4428-9a85-fd2738d4c35b"
+      }
+    },
+    "owner": "stegles"
   }
 }

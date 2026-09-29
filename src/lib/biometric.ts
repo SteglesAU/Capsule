@@ -1,6 +1,8 @@
+import { Platform } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
 
 export async function authenticateWithBiometrics(): Promise<boolean> {
+  if (Platform.OS === 'web') return true; // no biometric hardware on the web demo
   const hasHardware = await LocalAuthentication.hasHardwareAsync();
   if (!hasHardware) return true; // No biometric hardware — allow through
 
