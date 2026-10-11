@@ -7,23 +7,37 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "ios": { "image": "default" }
+      "ios": {
+        "image": "latest"
+      }
     },
     "preview": {
       "distribution": "internal",
       "autoIncrement": false,
       "ios": {
         "simulator": false,
-        "image": "default"
+        "image": "latest"
       },
       "credentialsSource": "local"
     },
     "production": {
       "autoIncrement": true,
       "ios": {
-        "image": "default"
+        "image": "latest"
       },
       "credentialsSource": "local"
+    },
+    "testflight": {
+      "extends": "production",
+      "env": {
+        "EXPO_PUBLIC_ALLOW_OVERRIDE": "1"
+      }
+    },
+    "androidprod": {
+      "autoIncrement": true,
+      "android": {
+        "buildType": "app-bundle"
+      }
     }
   },
   "submit": {
